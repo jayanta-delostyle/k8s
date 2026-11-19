@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  labels:
+    app.kubernetes.io/name: laptop-blog
+    app.kubernetes.io/component: mongodb
+spec:
+  serviceName: mongodb
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: laptop-blog
+      app.kubernetes.io/component: mongodb
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsGroup: 999
+        runAsUser: 999
+        fsGroup: 999
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: mongodb
+          image: mongo:8.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mongodb
+              containerPort: 27017
+              protocol: TCP
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: password
+          startupProbe:
+            tcpSocket:
+              port: mongodb
+            failureThreshold: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - mongosh
+                - --quiet
+                - --eval
+                - "db.adminCommand('ping')"
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: mongodb
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongodb-data
+  volumeClaimTemplates:
+    - metadata:
+        name: mongodb-data
+      spec:
+        accessModes:
+          - readWriteOnce
+        storageClassName: gp3-encrypted
+        resources:
+          requests:
+            storage: 10Gi
