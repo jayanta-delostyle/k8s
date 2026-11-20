@@ -19,3 +19,6 @@ resources:
 - security/serviceaccounts.yaml
 - security/resourcequota
 - security/limitrange.yml
+commonLabels:
+  app.kubernetes.io/part-of: laptop-blog
+  app.kubernetes.io/managed-by: kustomize

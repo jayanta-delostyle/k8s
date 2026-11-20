@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: laptop-blog-dev
+resources:
+- ../../base
+- externalsecret.yml
+patches:
+- path: path-config.yml
+- path: patch-ingress.yaml
+- path: patch-serviceaccount.yaml
+images:
+- name: REPLACE_ME_FRONTEND_IMAGE
+  newName: REPLACE_ME_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/laptop-blog-frontend
+  newTag: REPLACE_ME_DEV_FRONTEND_TAG
+- name: REPLACE_ME_FRONTEND_IMAGE
+  newName: REPLACE_ME_ACCOUNT.dkr.ecr.us-east-1.amazonaws.com/laptop-blog-backend
+  newTag: REPLACE_ME_DEV_BACKEND_TAG

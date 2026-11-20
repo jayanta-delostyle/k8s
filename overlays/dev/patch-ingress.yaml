@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: laptop-blog
+  annotations:
+    alb.ingress.kubernetes.io/certificate-arn: REPLACE_ME_DEV_ACM_CERTIFICATE_ARN
+    alb.ingress.kubernetes.io/subnets: REPLACE_ME_PUBLIC_SUBNET_IDS
+    alb.ingress.kubernetes.io/group.name: laptop-blog-dev
+spec:
+  rules:
+  - host: dev.REPLACE_ME_DOMAIN
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 3000
+  - host: ap-dev.REPLACE_ME_DOMAIN
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: backend
+            port:
+              number: 4000

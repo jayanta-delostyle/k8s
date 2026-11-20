@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
-metadata: 
+metadata:
   name: laptop-blog
-  annotations: 
+  annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
@@ -12,26 +12,25 @@ metadata:
 
 spec:
   ingressClassName: alb
-  rules: 
-    - host: blog.example.com
-      http:
-        paths: 
-          - path: /
-            backend:
-              service:
-                name: frontend
-                port: 
-                  number: 3000
-            pathType: Prefix
-            
-    - host: api.example.com
-      http:
-        paths:
-          - path: /
-            backend:
-              service:
-                name: backend
-                port:
-                  number: 4000
-            pathType: Prefix
-                      
+  rules:
+  - host: blog.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 3000
+        pathType: Prefix
+
+  - host: api.example.com
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: backend
+            port:
+              number: 4000
+        pathType: Prefix
