@@ -4,7 +4,7 @@ metadata:
   name: frontend
 spec:
   minAvailable: 1
-  selector: 
+  selector:
     matchLabels:
       app.kubernetes.io/name: laptop-blog
       app.kubernetes.io/component: frontend
